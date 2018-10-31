@@ -1,0 +1,13 @@
+{
+  "values": 
+    {
+      "myS3OutputLoc": "s3://",
+      "myS3InputLoc": "s3://",
+      "myRDSTableName": "",
+      "myShellCmd": "",
+      "myEc2RdsSecurityGrps": "",
+      "myRDSConnectStr": "",
+      "myRDSpassword": "",
+      "myRDSusername": ""
+    }
+}
