@@ -1,239 +1,357 @@
-PostgreSQLInputS3Output: 
-  Type: AWS::DataPipeline::Pipeline
-  Properties: 
-    Name: PostgreSQLInputS3Output
-    Description: "Pipeline to copy data from PostgreSQL"
-    Activate: true
-    ParameterObjects: 
-      - 
-        Id: "myOutputS3Loc"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "S3 output bucket"
-          - 
-            Key: "type"
-            StringValue: "AWS::S3::ObjectKey"
-      - 
-        Id: "myRDSTableName"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "Postgres Table Name "
-          - 
-            Key: "type"
-            StringValue: "String"
-      - 
-        Id: "myInputS3Loc"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "S3 input bucket"
-          - 
-            Key: "type"
-            StringValue: "AWS::S3::ObjectKey"   
-      - 
-        Id: "myShellCmd"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "Shell command to run"
-          - 
-            Key: "type"
-            StringValue: "String"
-      - 
-        Id: "myEc2RdsSecurityGrps"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "RDS PGSQL security group(s)"
-          - 
-            Key: "type"
-            StringValue: "String"
-          -
-            Key: "isArray"
-            StringValue: "true"
-          -
-            Key: "optional"
-            StringValue: "true"
-      - 
-        Id: "myRDSConnectStr"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "RDS PGSQL connection string"
-          -
-            Key: "type"
-            StringValue: "String"
-      - 
-        Id: "myRDSpassword"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "RDS PGSQL password"
-          -
-            Key: "type"
-            StringValue: "String"
-      - 
-        Id: "myRDSusername"
-        Attributes: 
-          - 
-            Key: "description"
-            StringValue: "RDS PGSQL username"
-          -
-            Key: "type"
-            StringValue: "String"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ''
+Metadata: {}
+Parameters:
+  OutputS3:
+    Default: ""
+    Description: Output S3 bucket 
+    Type: String
+  InputS3:
+    Default: ""
+    Description: Input S3 bucket 
+    Type: String
+  SecurityGroup:
+    Default: "sg-000a9063e98308975"
+    Description: Security Group for EC2 instance 
+    Type: String
+  PrimarySubnet:
+    Default: "subnet-03c106fac9d1apcfe"
+    Description: Subnet for EC2 instance
+    Type: String
+  KeyPair:
+    Default: ""
+    Description: Key pair for EC2 instance
+    Type: String
+  RDSUsername:
+    Default: ""
+    Description: RDS Username
+    Type: String
+  RDSPassword:
+    Default: ""
+    Description: RDS Password
+    Type: String
+  RDSTable:
+    Default: ""
+    Description: RDS Table
+    Type: String
+  ShellCmd:
+    Default: ""
+    Description: Shell command to clean dataset
+    Type: String
+  RDSConnection:
+    Default: ""
+    Description: RDS Connection String
+    Type: String
+  
+Resources:
+  PostgreSQLInputS3Output: 
+    Type: AWS::DataPipeline::Pipeline
+    Properties: 
+      Name: PostgreSQLInputS3Output
+      Description: "Pipeline to copy data from PostgreSQL"
+      Activate: true
+      ParameterObjects: 
+        - 
+          Id: "myOutputS3Loc"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "S3 output bucket"
+            - 
+              Key: "type"
+              StringValue: "AWS::S3::ObjectKey"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "OutputS3"
+        - 
+          Id: "myInputS3Loc"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "S3 output bucket"
+            - 
+              Key: "type"
+              StringValue: "AWS::S3::ObjectKey"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "InputS3"
+        - 
+          Id: "myRDSTableName"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "Postgres Table Name "
+            - 
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "RDSTable"
+        - 
+          Id: "myShellCmd"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "Shell command to run"
+            - 
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "ShellCmd"
+        - 
+          Id: "myEc2RdsSecurityGrps"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "RDS PGSQL security group(s)"
+            - 
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "isArray"
+              StringValue: "true"
+            -
+              Key: "optional"
+              StringValue: "true"
+            -
+              Key: "watermark"
+              StringValue:
+                -
+                  !Ref "SecurityGroup"
+        - 
+          Id: "myRDSConnectStr"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "RDS PGSQL connection string"
+            -
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "RDSConnection"
+        - 
+          Id: "myRDSpassword"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "RDS PGSQL password"
+            -
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "RDSPassword"
+        - 
+          Id: "myRDSusername"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "RDS PGSQL username"
+            -
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "RDSUsername"
 
-    PipelineObjects: 
-      - 
-        Id: "Ec2Instance"
-        Name: "Ec2Instance"
-        Fields:
+      PipelineObjects: 
+        - 
+          Id: "Ec2Instance"
+          Name: "Ec2Instance"
+          Fields:
+            -
+              Key: "type"
+              StringValue: "Ec2Resource"
+            -
+              Key: "instanceType"
+              StringValue: "t1.micro"
+            -
+              Key: "securityGroups"
+              StringValue: "#{myEc2RdsSecurityGrps}"
+            -
+              Key: "subnetId"
+              RefValue: "PrimarySubnet"
+            -
+              Key: "keyPair"
+              RefValue: "KeyPair"
+            -
+              Key: "terminateAfter"
+              StringValue: "2 Hours"
+            -
+              Key: "resourceRole"
+              StringValue: "DataPipelineDefaultResourceRole"
+            -
+              Key: "role"
+              StringValue: "DataPipelineDefaultRole"
+        - 
+          Id: "RDStoS3CopyActivity"
+          Name: "RDStoS3CopyActivity"
+          Fields:
+            -
+              Key: "type"
+              StringValue: "CopyActivity"
+            -
+              Key: "output"
+              StringValue:
+                -
+                  RefValue: "S3InputLocation"
+            -
+              Key: "input"
+              StringValue: "SourceRDSTable"
+            -
+              Key: "runsOn"
+              StringValue:
+                -
+                  RefValue: "Ec2Instance"
+        - 
+          Id: "S3InputLocation"
+          Name: "Copy data to this S3 location from RDS"
+          Fields: 
+            - 
+              Key: "type"
+              StringValue: "S3DataNode"
+            - 
+              Key: "directoryPath"
+              StringValue: "#{myInputS3Loc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}"
+        - 
+          Id: "S3OutputLocation"
+          Name: "Copy data to this S3 location from Input S3 location"
+          Fields: 
+            - 
+              Key: "type"
+              StringValue: "S3DataNode"
+            - 
+              Key: "directoryPath"
+              StringValue: "#{myOutputS3Loc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}"
+        - 
+          Id: "SourceRDSTable"
+          Name: "SourceRDSTable"
+          Fields: 
+            - 
+              Key: "connectionString"
+              StringValue: "#{myRDSConnectStr}"
+            - 
+              Key: "type"
+              StringValue: "RdsDatabase"
+            - 
+              Key: "password"
+              RefValue: "#{myRDSpassword}"
+            - 
+              Key: "table"
+              StringValue: "#{myRDSTableName}"
+            -
+              Key: "selectQuery"
+              StringValue: "select * from #{table}"
+            -
+              Key: "username"
+              StringValue: "#{myRDSusername}"
+        - 
+          Id: "ShellCommandActivityObj"
+          Name: "ShellCommandActivityObj"
+          Fields: 
+            -
+              Key: "runsOn"
+              StringValue:
+                -
+                  RefValue: "Ec2Instance"
+            - 
+              Key: "type"
+              StringValue: "ShellCommandActivity"
+            - 
+              Key: "stage"
+              RefValue: "true"
+            -
+              Key: "input"
+              StringValue: 
+                -
+                  RefValue: "S3InputLocation"
+            -
+              Key: "output"
+              StringValue: 
+                -
+                  RefValue: "S3OutputLocation"
+            -
+              Key: "command"
+              StringValue: 
+                -
+                  RefValue: "#{myShellCmd}"
+        - 
+          Id: "DefaultSchedule"
+          Name: "RunOnce"
+          Fields: 
+            - 
+              Key: "occurrences"
+              StringValue: "1"
+            - 
+              Key: "startAt"
+              StringValue: "FIRST_ACTIVATION_DATE_TIME"
+            - 
+              Key: "type"
+              StringValue: "Default"
+            - 
+              Key: "period"
+              StringValue: "1 Day"
+        - 
+          Id: "Default"
+          Name: "Default"
+          Fields: 
+            - 
+              Key: "type"
+              StringValue: "Default"
+            - 
+              Key: "scheduleType"
+              StringValue: "cron"
+            - 
+              Key: "failureAndRerunMode"
+              StringValue: "CASCADE"
+            - 
+              Key: "role"
+              StringValue: "DataPipelineDefaultRole"
+            - 
+              Key: "resourceRole"
+              StringValue: "DataPipelineDefaultResourceRole"
+            - 
+              Key: "schedule"
+              RefValue: "DefaultSchedule"
+  DataPipelineDefaultResourceRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
           -
-            Key: "type"
-            StringValue: "Ec2Resource"
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "ec2.amazonaws.com"
+                - "s3:*"
+                - "rds:*"
+            Action: 
+              - "sts:AssumeRole"
+  DataPipelineDefaultRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
           -
-            Key: "instanceType"
-            StringValue: "t1.micro"
-          -
-            Key: "securityGroups"
-            StringValue: "#{myEc2RdsSecurityGrps}"
-          -
-            Key: "terminateAfter"
-            StringValue: "2 Hours"
-          -
-            Key: "resourceRole"
-            StringValue: "DataPipelineDefaultResourceRole"
-          -
-            Key: "role"
-            StringValue: "DataPipelineDefaultRole"
-      - 
-        Id: "RDStoS3CopyActivity"
-        Name: "RDStoS3CopyActivity"
-        Fields:
-          -
-            Key: "type"
-            StringValue: "CopyActivity"
-          -
-            Key: "output"
-            StringValue:
-              -
-                Ref: "S3InputLocation"
-          -
-            Key: "input"
-            StringValue: "SourceRDSTable"
-          -
-            Key: "runsOn"
-            StringValue:
-              -
-                Ref: "Ec2Instance"
-      - 
-        Id: "S3InputLocation"
-        Name: "Copy data to this S3 location from RDS"
-        Fields: 
-          - 
-            Key: "type"
-            StringValue: "S3DataNode"
-          - 
-            Key: "directoryPath"
-            StringValue: "#{myInputS3Loc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}"
-      - 
-        Id: "S3OutputLocation"
-        Name: "Copy data to this S3 location from Input S3 location"
-        Fields: 
-          - 
-            Key: "type"
-            StringValue: "S3DataNode"
-          - 
-            Key: "directoryPath"
-            StringValue: "#{myOutputS3Loc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}"
-      - 
-        Id: "SourceRDSTable"
-        Name: "SourceRDSTable"
-        Fields: 
-          - 
-            Key: "connectionString"
-            StringValue: "#{myRDSConnectStr}"
-          - 
-            Key: "type"
-            StringValue: "RdsDatabase"
-          - 
-            Key: "password"
-            RefValue: "#{myRDSpassword}"
-          - 
-            Key: "table"
-            StringValue: "#{myRDSTableName}"
-          -
-            Key: "selectQuery"
-            StringValue: "select * from #{table}"
-          -
-            Key: "username"
-            StringValue: "#{myRDSusername}"
-      - 
-        Id: "ShellCommandActivityObj"
-        Name: "ShellCommandActivityObj"
-        Fields: 
-          -
-            Key: "runsOn"
-            StringValue:
-              -
-                Ref: "Ec2Instance"
-          - 
-            Key: "type"
-            StringValue: "ShellCommandActivity"
-          - 
-            Key: "stage"
-            RefValue: "true"
-          -
-            Key: "input"
-            StringValue: 
-              -
-                Ref: "S3InputLocation"
-          -
-            Key: "output"
-            StringValue: 
-              -
-                Ref: "S3OutputLocation"
-          -
-            Key: "command"
-            StringValue: 
-              -
-                Ref: "#{myShellCmd}"
-      - 
-        Id: "DefaultSchedule"
-        Name: "RunOnce"
-        Fields: 
-          - 
-            Key: "occurrences"
-            StringValue: "1"
-          - 
-            Key: "startAt"
-            StringValue: "FIRST_ACTIVATION_DATE_TIME"
-          - 
-            Key: "type"
-            StringValue: "Default"
-          - 
-            Key: "period"
-            StringValue: "1 Day"
-      - 
-        Id: "Default"
-        Name: "Default"
-        Fields: 
-          - 
-            Key: "type"
-            StringValue: "Default"
-          - 
-            Key: "scheduleType"
-            StringValue: "cron"
-          - 
-            Key: "failureAndRerunMode"
-            StringValue: "CASCADE"
-          - 
-            Key: "role"
-            StringValue: "DataPipelineDefaultRole"
-          - 
-            Key: "resourceRole"
-            StringValue: "DataPipelineDefaultResourceRole"
-          - 
-            Key: "schedule"
-            RefValue: "DefaultSchedule"
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "datapipeline.amazonaws.com"
