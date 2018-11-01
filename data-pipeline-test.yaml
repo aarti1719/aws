@@ -95,7 +95,7 @@ Resources:
               StringValue: "AWS::S3::ObjectKey"
             -
               Key: "default"
-              StringValue:
+              RefValue:
                 -
                   !Ref "OutputS3"
         - 
@@ -109,7 +109,7 @@ Resources:
               StringValue: "String"
             -
               Key: "default"
-              StringValue:
+              RefValue:
                 -
                   !Ref "ShellCmd"
         - 
@@ -129,7 +129,7 @@ Resources:
               StringValue: "true"
             -
               Key: "watermark"
-              StringValue:
+              RefValue:
                 -
                   !Ref "SecurityGroup"
 
