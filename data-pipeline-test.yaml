@@ -11,11 +11,11 @@ Parameters:
     Description: Input S3 bucket 
     Type: String
   SecurityGroup:
-    Default: "sg-000a9063e98308975"
+    Default: "sg-09c42829f9411c8a2"
     Description: Security Group for EC2 instance 
     Type: String
   PrimarySubnet:
-    Default: "subnet-03c106fac9d1apcfe"
+    Default: "subnet-09ab44358e30e3a06 "
     Description: Subnet for EC2 instance
     Type: String
   RDSUsername:
