@@ -1,0 +1,234 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ''
+Metadata: {}
+Parameters:
+  OutputS3:
+    Default: "testpipelineaarti"
+    Description: Output S3 bucket 
+    Type: String
+  InputS3:
+    Default: ""
+    Description: Input S3 bucket 
+    Type: String
+  SecurityGroup:
+    Default: "sg-000a9063e98308975"
+    Description: Security Group for EC2 instance 
+    Type: String
+  PrimarySubnet:
+    Default: "subnet-03c106fac9d1apcfe"
+    Description: Subnet for EC2 instance
+    Type: String
+  RDSUsername:
+    Default: ""
+    Description: RDS Username
+    Type: String
+  RDSPassword:
+    Default: ""
+    Description: RDS Password
+    Type: String
+  RDSTable:
+    Default: ""
+    Description: RDS Table
+    Type: String
+  ShellCmd:
+    Default: "echo Hello World!"
+    Description: Shell command to clean dataset
+    Type: String
+  RDSConnection:
+    Default: ""
+    Description: RDS Connection String
+    Type: String
+  
+Resources:
+  DataPipelineDefaultResourceRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "s3:*"
+                - "rds:*"
+                - "ec2:Describe*"
+                - "ec2:Start*"
+                - "ec2:RunInstances"
+                - "ec2:Stop*"
+                - "datapipeline:*"
+                - "cloudwatch:*"
+            Action: 
+              - "sts:AssumeRole"
+  DataPipelineDefaultRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "datapipeline.amazonaws.com"
+  S3Output:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref "OutputS3"
+      VersioningConfiguration:
+        Status: Enabled
+  PostgreSQLInputS3Output: 
+    Type: AWS::DataPipeline::Pipeline
+    Properties: 
+      Name: PostgreSQLInputS3Output
+      Description: "Pipeline to copy data from PostgreSQL"
+      Activate: true
+      ParameterObjects: 
+        - 
+          Id: "myOutputS3Loc"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "S3 output bucket"
+            - 
+              Key: "type"
+              StringValue: "AWS::S3::ObjectKey"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "OutputS3"
+        - 
+          Id: "myShellCmd"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "Shell command to run"
+            - 
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "default"
+              StringValue:
+                -
+                  !Ref "ShellCmd"
+        - 
+          Id: "myEc2RdsSecurityGrps"
+          Attributes: 
+            - 
+              Key: "description"
+              StringValue: "RDS PGSQL security group(s)"
+            - 
+              Key: "type"
+              StringValue: "String"
+            -
+              Key: "isArray"
+              StringValue: "true"
+            -
+              Key: "optional"
+              StringValue: "true"
+            -
+              Key: "watermark"
+              StringValue:
+                -
+                  !Ref "SecurityGroup"
+
+      PipelineObjects: 
+        - 
+          Id: "Ec2Instance"
+          Name: "Ec2Instance"
+          Fields:
+            -
+              Key: "type"
+              StringValue: "Ec2Resource"
+            -
+              Key: "instanceType"
+              StringValue: "t1.micro"
+            -
+              Key: "securityGroups"
+              StringValue: "#{myEc2RdsSecurityGrps}"
+            -
+              Key: "subnetId"
+              RefValue: "PrimarySubnet"
+            -
+              Key: "terminateAfter"
+              StringValue: "2 Hours"
+            -
+              Key: "resourceRole"
+              StringValue: "DataPipelineDefaultResourceRole"
+            -
+              Key: "role"
+              StringValue: "DataPipelineDefaultRole"
+        - 
+          Id: "S3OutputLocation"
+          Name: "Copy data to this S3 location from Input S3 location"
+          Fields: 
+            - 
+              Key: "type"
+              StringValue: "S3DataNode"
+            - 
+              Key: "directoryPath"
+              StringValue: "#{myOutputS3Loc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}"
+        - 
+          Id: "ShellCommandActivityObj"
+          Name: "ShellCommandActivityObj"
+          Fields: 
+            -
+              Key: "runsOn"
+              StringValue:
+                -
+                  RefValue: "Ec2Instance"
+            - 
+              Key: "type"
+              StringValue: "ShellCommandActivity"
+            - 
+              Key: "stage"
+              RefValue: "true"
+            -
+              Key: "output"
+              StringValue: 
+                -
+                  RefValue: "S3OutputLocation"
+            -
+              Key: "command"
+              StringValue: 
+                -
+                  RefValue: "#{myShellCmd}"
+        - 
+          Id: "DefaultSchedule"
+          Name: "RunOnce"
+          Fields: 
+            - 
+              Key: "occurrences"
+              StringValue: "1"
+            - 
+              Key: "startAt"
+              StringValue: "FIRST_ACTIVATION_DATE_TIME"
+            - 
+              Key: "type"
+              StringValue: "Default"
+            - 
+              Key: "period"
+              StringValue: "1 Day"
+        - 
+          Id: "Default"
+          Name: "Default"
+          Fields: 
+            - 
+              Key: "type"
+              StringValue: "Default"
+            - 
+              Key: "scheduleType"
+              StringValue: "cron"
+            - 
+              Key: "failureAndRerunMode"
+              StringValue: "CASCADE"
+            - 
+              Key: "role"
+              StringValue: "DataPipelineDefaultRole"
+            - 
+              Key: "resourceRole"
+              StringValue: "DataPipelineDefaultResourceRole"
+            - 
+              Key: "schedule"
+              RefValue: "DefaultSchedule"
