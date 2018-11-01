@@ -15,7 +15,7 @@ Parameters:
     Description: Security Group for EC2 instance 
     Type: String
   PrimarySubnet:
-    Default: "subnet-09ab44358e30e3a06 "
+    Default: "subnet-09ab44358e30e3a06"
     Description: Subnet for EC2 instance
     Type: String
   RDSUsername:
