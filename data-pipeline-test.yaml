@@ -57,8 +57,6 @@ Resources:
                 - "ec2:Stop*"
                 - "datapipeline:*"
                 - "cloudwatch:*"
-            Resource: 
-              - "*" 
   DataPipelineDefaultRole: 
     Type: AWS::IAM::Role
     Properties:
@@ -76,8 +74,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref "OutputS3"
-      VersioningConfiguration:
-        Status: Enabled
   PostgreSQLInputS3Output: 
     Type: AWS::DataPipeline::Pipeline
     Properties: 
@@ -96,9 +92,8 @@ Resources:
               StringValue: "AWS::S3::ObjectKey"
             -
               Key: "default"
-              RefValue:
-                -
-                  !Ref "OutputS3"
+              StringValue:
+                - Ref "OutputS3"
         - 
           Id: "myShellCmd"
           Attributes: 
