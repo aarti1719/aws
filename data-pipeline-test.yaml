@@ -130,7 +130,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref "OutputS3"
-
   PostgreSQLInputS3Output: 
     Type: AWS::DataPipeline::Pipeline
     Properties: 
