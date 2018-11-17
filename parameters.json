@@ -1,15 +1,11 @@
 [
   {
-    "ParameterKey": "ApigeePubKey",
-    "ParameterValue": "MyKey"
-  }, 
-  {
     "ParameterKey": "ClusterName",
     "ParameterValue": "RDE-API-CLUSTER-TEST"
   },
   {
     "ParameterKey": "Image",
-    "ParameterValue": ""
+    "ParameterValue": "778784494011.dkr.ecr.us-east-1.amazonaws.com/rde-api:292a2ea"
   },
   {
     "ParameterKey": "MappingTableName",
