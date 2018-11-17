@@ -1,3 +1,6 @@
 aws cloudformation create-stack --stackname ecs-testing-aarti
     --template-body file:///ecs-cluster.yml 
     --parameters file:///parameters.json
+
+git config --global credential.helper '!aws codecommit credential-helper $@'
+git config --global credential.UseHttpPath true
