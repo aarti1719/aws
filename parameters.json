@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "ApigeePubKey",
+    "ParameterValue": "MyKey"
+  }, 
+  {
+    "ParameterKey": "ClusterName",
+    "ParameterValue": "RDE-API-CLUSTER-TEST"
+  },
+  {
+    "ParameterKey": "Image",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "MappingTableName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "ServiceName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "SubnetIds",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "TableName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "TaskName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": ""
+  } 
+]
