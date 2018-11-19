@@ -9,26 +9,26 @@
   },
   {
     "ParameterKey": "MappingTableName",
-    "ParameterValue": ""
+    "ParameterValue": "RDE-API-TABLE-TEST-MappingTable-W62XKSCETIAS"
   },
   {
     "ParameterKey": "ServiceName",
-    "ParameterValue": ""
+    "ParameterValue": "RDE-API-SERVICE-TEST"
   },
   {
     "ParameterKey": "SubnetIds",
-    "ParameterValue": ""
+    "ParameterValue": "subnet-068fc293e3ad7a9be,subnet-010e9b59b8f280b98"
   },
   {
     "ParameterKey": "TableName",
-    "ParameterValue": ""
+    "ParameterValue": "RDE-API-TABLE-TEST-Table-NFW7EPM26ULV"
   },
   {
     "ParameterKey": "TaskName",
-    "ParameterValue": ""
+    "ParameterValue": "rde-api"
   },
   {
     "ParameterKey": "VpcId",
-    "ParameterValue": ""
+    "ParameterValue": "vpc-02267fbf8b2ec8e30"
   } 
 ]
