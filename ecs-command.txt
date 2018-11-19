@@ -1,4 +1,4 @@
-aws cloudformation create-stack --stackname ecs-testing-aarti
+aws cloudformation create-stack --stackname ecs-testing-rani
     --template-body file:///ecs-cluster.yml 
     --parameters file:///parameters.json
 
