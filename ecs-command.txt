@@ -1,6 +1,8 @@
 aws cloudformation create-stack --stack-name ecs-testing-rani \
-    --template-body file://ecs-cluster.yml \
-    --parameters file://parameters.json
+--template-body file://ecs-cluster.yml \
+--parameters file://parameters.json \
+--profile otsuka-dev \
+--capabilities CAPABILITY_IAM
 
 git config --global credential.helper '!aws codecommit credential-helper $@'
 git config --global credential.UseHttpPath true
