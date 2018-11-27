@@ -1,4 +1,4 @@
-aws cloudformation create-stack --stack-name ecs-testing-rani --template-body file://ecs_cluster.yml --parameters file://parameters.json --capabilities CAPABILITY_IAM
+aws cloudformation create-stack --stack-name ecs-testing-rani --template-body file://ecs-cluster/ecs_cluster.yml --parameters file://parametersforecs.json --capabilities CAPABILITY_IAM
 
 git config --global credential.helper '!aws codecommit credential-helper $@'
 git config --global credential.UseHttpPath true
