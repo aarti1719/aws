@@ -218,35 +218,13 @@ Resources:
         #         RoleArn: !ImportValue rde:roles:api:cfnrole
         #         StackName: "RDE-API-TABLE-TEST"
 
-        - Name: Beta 
+       - Name: Dev 
           Actions:
-            - Name: "Provision-DB"
+            - Name: "Provision-ECS"
               RunOrder: 1
               InputArtifacts:
                 - Name: Source
                 - Name: BuildArtifacts
-              OutputArtifacts:
-                - Name: CapTableArtifacts
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Provider: CloudFormation
-                Version: 1
-              Configuration:
-                ActionMode: CREATE_UPDATE
-                Capabilities: CAPABILITY_IAM
-                RoleArn: !ImportValue rde:roles:api:cfnrole
-                StackName: "RDE-API-TABLE-CAP"
-                OutputFileName: table-out.json
-                TemplateConfiguration: Source::cfn/cfn_table.config_cap.json
-                TemplatePath: Source::cfn/cfn_table.yml
-                
-            - Name: "Provision-ECS"
-              RunOrder: 2
-              InputArtifacts:
-                - Name: Source
-                - Name: BuildArtifacts
-                - Name: CapTableArtifacts
               OutputArtifacts:
                 - Name: CapInfraArtifacts
               ActionTypeId:
@@ -259,56 +237,128 @@ Resources:
                 Capabilities: CAPABILITY_IAM
                 RoleArn: !ImportValue rde:roles:api:cfnrole
                 StackName: "RDE-API-ECS-CAP"
-                OutputFileName: infra-out.json
-                TemplateConfiguration: BuildArtifacts::cfn/cfn_infra.config_cap.json
-                TemplatePath: Source::cfn/cfn_infra.yml
-                ParameterOverrides: |
-                  {
-                    "TableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "TableName"]},
-                    "MappingTableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "MappingTableName"]}
-                  }
-
-#            - Name: "Provision-Scaling"
-#              RunOrder: 3
-#              InputArtifacts:
-#                - Name: Source
-#                - Name: BuildArtifacts
-#                - Name: CapInfraArtifacts
-#                - Name: CapTableArtifacts
-#              ActionTypeId:
-#                Category: Deploy
-#                Owner: AWS
-#                Provider: CloudFormation
-#                Version: 1
-#              Configuration:
-#                ActionMode: CREATE_UPDATE
-#                Capabilities: CAPABILITY_IAM
-#                RoleArn: !ImportValue rde:roles:api:cfnrole
-#                StackName: "RDE-API-SCALING-CAP"
-#                OutputFileName: infra-out.json
-#                TemplateConfiguration: Source::cfn/cfn_scaling.config_cap.json
-#                TemplatePath: Source::cfn/cfn_scaling.yml
-#                ParameterOverrides: |
-#                  {
-#                    "TableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "TableName"]}
-#                  }                
-
-            - Name: "Test-Runner"
-              RunOrder: 3
-              ActionTypeId:
-                Category: Test
-                Provider: CodeBuild
-                Owner: AWS
-                Version: 1
-              Configuration:
-                ProjectName: !Ref CapProject
-                PrimarySource: Source
+                OutputFileName: rani_infra-out.json
+                TemplateConfiguration: Source::cfn/rani_cfn_infra.config_cap.json
+                TemplatePath: Source::cfn/rani_cfn_infra.yml
+                
+            - Name: "Provision-Service"
+              RunOrder: 2
               InputArtifacts:
-                - Name: Source 
-                - Name: CapTableArtifacts
+                - Name: Source
+                - Name: BuildArtifacts
                 - Name: CapInfraArtifacts
               OutputArtifacts:
-                - Name: CapacityArtifacts
+                - Name: CapServiceArtifacts
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_IAM
+                RoleArn: !ImportValue rde:roles:api:cfnrole
+                StackName: "RDE-API-ECS-CAP"
+                OutputFileName: service-out.json
+                TemplateConfiguration: BuildArtifacts::cfn/cfn_service.config_cap.json
+                TemplatePath: Source::cfn/cfn_service.yml
+                # ParameterOverrides: |
+                #   {
+                #     "TableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "TableName"]},
+                #     "MappingTableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "MappingTableName"]}
+                #   }
+
+#         - Name: Beta 
+#           Actions:
+#             - Name: "Provision-DB"
+#               RunOrder: 1
+#               InputArtifacts:
+#                 - Name: Source
+#                 - Name: BuildArtifacts
+#               OutputArtifacts:
+#                 - Name: CapTableArtifacts
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Provider: CloudFormation
+#                 Version: 1
+#               Configuration:
+#                 ActionMode: CREATE_UPDATE
+#                 Capabilities: CAPABILITY_IAM
+#                 RoleArn: !ImportValue rde:roles:api:cfnrole
+#                 StackName: "RDE-API-TABLE-CAP"
+#                 OutputFileName: table-out.json
+#                 TemplateConfiguration: Source::cfn/cfn_table.config_cap.json
+#                 TemplatePath: Source::cfn/cfn_table.yml
+                
+#             - Name: "Provision-ECS"
+#               RunOrder: 2
+#               InputArtifacts:
+#                 - Name: Source
+#                 - Name: BuildArtifacts
+#                 - Name: CapTableArtifacts
+#               OutputArtifacts:
+#                 - Name: CapInfraArtifacts
+#               ActionTypeId:
+#                 Category: Deploy
+#                 Owner: AWS
+#                 Provider: CloudFormation
+#                 Version: 1
+#               Configuration:
+#                 ActionMode: CREATE_UPDATE
+#                 Capabilities: CAPABILITY_IAM
+#                 RoleArn: !ImportValue rde:roles:api:cfnrole
+#                 StackName: "RDE-API-ECS-CAP"
+#                 OutputFileName: infra-out.json
+#                 TemplateConfiguration: BuildArtifacts::cfn/cfn_infra.config_cap.json
+#                 TemplatePath: Source::cfn/cfn_infra.yml
+#                 ParameterOverrides: |
+#                   {
+#                     "TableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "TableName"]},
+#                     "MappingTableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "MappingTableName"]}
+#                   }
+
+# #            - Name: "Provision-Scaling"
+# #              RunOrder: 3
+# #              InputArtifacts:
+# #                - Name: Source
+# #                - Name: BuildArtifacts
+# #                - Name: CapInfraArtifacts
+# #                - Name: CapTableArtifacts
+# #              ActionTypeId:
+# #                Category: Deploy
+# #                Owner: AWS
+# #                Provider: CloudFormation
+# #                Version: 1
+# #              Configuration:
+# #                ActionMode: CREATE_UPDATE
+# #                Capabilities: CAPABILITY_IAM
+# #                RoleArn: !ImportValue rde:roles:api:cfnrole
+# #                StackName: "RDE-API-SCALING-CAP"
+# #                OutputFileName: infra-out.json
+# #                TemplateConfiguration: Source::cfn/cfn_scaling.config_cap.json
+# #                TemplatePath: Source::cfn/cfn_scaling.yml
+# #                ParameterOverrides: |
+# #                  {
+# #                    "TableName" : { "Fn::GetParam" : ["CapTableArtifacts", "table-out.json", "TableName"]}
+# #                  }                
+
+#             - Name: "Test-Runner"
+#               RunOrder: 3
+#               ActionTypeId:
+#                 Category: Test
+#                 Provider: CodeBuild
+#                 Owner: AWS
+#                 Version: 1
+#               Configuration:
+#                 ProjectName: !Ref CapProject
+#                 PrimarySource: Source
+#               InputArtifacts:
+#                 - Name: Source 
+#                 - Name: CapTableArtifacts
+#                 - Name: CapInfraArtifacts
+#               OutputArtifacts:
+#                 - Name: CapacityArtifacts
 
 #            - Name: "Destroy-Scaling"
 #              RunOrder: 5
