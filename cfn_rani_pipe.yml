@@ -170,6 +170,6 @@ Resources:
                 Capabilities: CAPABILITY_IAM
                 RoleArn: !ImportValue rde:roles:api:cfnrole
                 StackName: "RDE-API-ECS-CAP"
-                OutputFileName: service-out.json
-                TemplateConfiguration: BuildArtifacts::cfn/cfn_service.config_cap.json
-                TemplatePath: Source::cfn/cfn_service.yml
+                OutputFileName: rani_service-out.json
+                TemplateConfiguration: BuildArtifacts::cfn/rani_cfn_service.config_cap.json
+                TemplatePath: Source::cfn/rani_cfn_service.yml
